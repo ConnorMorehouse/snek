@@ -49,16 +49,17 @@ class snake(object):
 
     def move(self):
         
-        # auto = False
-        
         for event in pygame.event.get():  
             if event.type == pygame.QUIT:
                 pygame.quit()
                 
-            if event.type == pygame.KEYDOWN:    
-                if event.key == pygame.K_a:
-                    # auto = True
-                    pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    
+                elif event.key == pygame.K_a:
+                    global auto
+                    auto = not auto
                     
                 elif event.key == pygame.K_LEFT:
                     self.dirnx = -1
@@ -193,24 +194,27 @@ def message_box(subject, content):
 
 def autoPilot(snake, snack):
     head = snake.body[0].pos
-    dist = abs(head[0] - snack.pos[0])
+    dist = abs(head[0] - snack.pos[0]) + abs(head[1] - snack.pos[1])
     return(dist)
 
 def main():
-    global width, rows, s, snack
+    global width, rows, s, snack, auto
     width = 500 # changed (500)
     rows = 20 # changed (20)
     win = pygame.display.set_mode((width, width))
     s = snake((255,0,0), (10,10))
     snack = cube(randomSnack(rows, s), color=(0,255,0))
     flag = True
+    auto = False
 
     clock = pygame.time.Clock()
     
     while flag:
-        pygame.time.delay(500)
-        # clock.tick(15)
+        # pygame.time.delay(50)
+        clock.tick(7)
         s.move()
+        if auto == True:
+            print(autoPilot(s, snack))
         if s.body[0].pos == snack.pos:
             s.addCube()
             snack = cube(randomSnack(rows, s), color=(0,255,0))
@@ -221,9 +225,8 @@ def main():
                 message_box('You Lost!', 'Play again...')
                 s.reset((10,10))
                 break
-        # pygame.event.pump()
-        # print(pygame.event.get())
-        print(autoPilot(s,snack))
+
+        # print(autoPilot(s,snack))
         redrawWindow(win)
 
 main()
